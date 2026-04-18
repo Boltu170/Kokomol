@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physiology Revision — 100 Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #21262d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --wrong: #f85149;
+    --gold: #e3b341;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --radius: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    padding: 2rem 1rem 4rem;
+  }
+  header {
+    max-width: 860px;
+    margin: 0 auto 2.5rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 1.5rem;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: #fff;
+    line-height: 1.1;
+  }
+  header h1 span { color: var(--accent); }
+  header p {
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    margin-top: 0.6rem;
+  }
+  .score-bar {
+    max-width: 860px;
+    margin: 0 auto 2rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    position: sticky;
+    top: 0.5rem;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+  .score-bar strong { color: var(--accent); font-size: 1.1rem; }
+  .score-bar .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .score-bar .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .section-label {
+    max-width: 860px;
+    margin: 2rem auto 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-left: 3px solid var(--gold);
+    padding-left: 0.7rem;
+  }
+  .question-card {
+    max-width: 860px;
+    margin: 0 auto 1.2rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .question-card.answered { border-color: var(--border); }
+  .question-card.correct { border-color: var(--accent2); }
+  .question-card.incorrect { border-color: var(--wrong); }
+  .q-header {
+    padding: 1rem 1.4rem 0.8rem;
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+  }
+  .q-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    background: var(--border);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .q-text { font-size: 0.95rem; color: #e6edf3; font-weight: 500; }
+  .options { padding: 0 1.4rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .opt-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.6rem 1rem;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: #1c2230; }
+  .opt-btn:disabled { cursor: default; }
+  .opt-btn .letter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    background: var(--border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .opt-btn.correct-ans { background: #0d2818; border-color: var(--accent2); color: #3fb950; }
+  .opt-btn.correct-ans .letter { background: #1a4228; }
+  .opt-btn.wrong-ans { background: #2d1117; border-color: var(--wrong); color: #f85149; }
+  .opt-btn.wrong-ans .letter { background: #3d1a1e; }
+  .explanation {
+    background: #0e1a2e;
+    border-top: 1px solid var(--border);
+    padding: 0.8rem 1.4rem;
+    font-size: 0.85rem;
+    color: #8fb8e8;
+    display: none;
+    line-height: 1.6;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: var(--accent); }
+  .result-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .tag-correct { background: #0d2818; color: var(--accent2); }
+  .tag-wrong { background: #2d1117; color: var(--wrong); }
+
+/* ── Gap Fill ── */
+.gf-card {
+max-width: 860px;
+margin: 0 auto 1.2rem;
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: var(–radius);
+overflow: hidden;
+transition: border-color 0.2s;
+}
+.gf-card.gf-done { border-color: var(–accent); }
+.gf-header { padding: 1rem 1.4rem 0.8rem; display: flex; gap: 0.8rem; align-items: flex-start; }
+.gf-num {
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 0.72rem;
+color: var(–muted);
+background: var(–border);
+padding: 0.2rem 0.5rem;
+border-radius: 4px;
+white-space: nowrap;
+margin-top: 2px;
+flex-shrink: 0;
+}
+.gf-label { font-size: 0.72rem; font-family: ‘IBM Plex Mono’, monospace; color: var(–gold); background: #2a1f00; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.3rem; flex-shrink:0; }
+.gf-text { font-size: 0.95rem; color: #e6edf3; font-weight: 500; }
+.gf-passage {
+padding: 0 1.4rem 0.5rem;
+font-size: 0.92rem;
+color: var(–text);
+line-height: 2;
+}
+.gf-blank {
+display: inline-block;
+border: none;
+border-bottom: 2px solid var(–accent);
+background: transparent;
+color: var(–accent);
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 0.88rem;
+width: 160px;
+padding: 0 4px;
+outline: none;
+text-align: center;
+transition: border-color 0.2s;
+}
+.gf-blank:focus { border-color: var(–gold); }
+.gf-blank.gf-correct { border-color: var(–accent2); color: var(–accent2); }
+.gf-blank.gf-wrong  { border-color: var(–wrong);  color: var(–wrong); }
+.gf-wordbank {
+padding: 0 1.4rem 0.8rem;
+display: flex;
+flex-wrap: wrap;
+gap: 0.4rem;
+font-size: 0.8rem;
+}
+.gf-wordbank span {
+font-family: ‘IBM Plex Mono’, monospace;
+background: var(–border);
+color: var(–muted);
+padding: 0.2rem 0.6rem;
+border-radius: 4px;
+}
+.gf-wordbank em { color: var(–muted); font-style: normal; font-size: 0.75rem; margin-right: 0.2rem; }
+.gf-submit-btn {
+margin: 0 1.4rem 1rem;
+background: var(–accent);
+color: #0d1117;
+border: none;
+border-radius: 6px;
+padding: 0.5rem 1.2rem;
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 0.82rem;
+cursor: pointer;
+font-weight: 600;
+transition: opacity 0.2s;
+}
+.gf-submit-btn:hover { opacity: 0.85; }
+.gf-submit-btn:disabled { opacity: 0.4; cursor: default; }
+.gf-explanation {
+background: #0e1a2e;
+border-top: 1px solid var(–border);
+padding: 0.8rem 1.4rem;
+font-size: 0.85rem;
+color: #8fb8e8;
+display: none;
+line-height: 1.6;
+}
+.gf-explanation.show { display: block; }
+.gf-explanation strong { color: var(–accent); }
+.gf-result-row { padding: 0.4rem 1.4rem 0.6rem; font-family: ‘IBM Plex Mono’, monospace; font-size: 0.78rem; display: none; }
+.gf-result-row.show { display: block; }
+.gf-result-row .mark { color: var(–accent2); }
+.gf-result-row .mark-wrong { color: var(–wrong); }
+footer {
+max-width: 860px;
+margin: 3rem auto 0;
+text-align: center;
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 0.75rem;
+color: var(–muted);
+}
+@media (max-width: 600px) {
+body { padding: 1rem 0.5rem 3rem; }
+.score-bar { flex-wrap: wrap; }
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1>Physiology <span>Revision</span></h1>
+  <p>MOD008108 · 100 Practice Questions · Select an answer to reveal explanation</p>
+</header>
+
+<div class="score-bar">
+  <span>Score: <strong id="score-display">0 / 0</strong></span>
+  <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+  <span id="pct-display">0%</span>
+</div>
+
+<div id="quiz-container"></div>
+
+<div class="section-label" style="max-width:860px;margin:2.5rem auto 1rem;">✏️ Gap Fill Questions — Worth 3 marks each</div>
+<div id="gf-container"></div>
+<footer>
+  <p>Physiology Revision Set · For exam preparation only · Good luck! 🧬</p>
+</footer>
+
+<script>
+const questions = [
+  // ── HOMEOSTASIS & FEEDBACK ─────────────────────────────────────────────
+  {
+    section: "🔁 Homeostasis & Feedback",
+    q: "Which of the following best describes a negative feedback mechanism?",
+    opts: ["A deviation from the set point triggers a response that restores the system to normal", "A change in a variable causes further change in the same direction", "A receptor sends signals directly to the brain", "Hormones increase continuously until stopped externally"],
+    ans: 0,
+    exp: "<strong>Negative feedback</strong> detects a deviation from the set point and triggers a corrective response that reverses the change — restoring the variable back to its normal range."
+  },
+  {
+    q: "Which of the following scenarios is the best example of positive feedback?",
+    opts: ["Sweating when body temperature rises", "Blood clotting — clotting factors amplify the response until the wound is sealed", "Insulin released when blood glucose falls", "Shivering to generate heat"],
+    ans: 1,
+    exp: "<strong>Positive feedback</strong> amplifies a change rather than reversing it. Blood clotting is a classic example — clotting factors activate more clotting factors, escalating the response until the wound is healed."
+  },
+  {
+    q: "Which structure in the brain acts as the 'thermostat', monitoring and regulating body temperature?",
+    opts: ["Pituitary gland", "Cerebellum", "Hypothalamus", "Medulla oblongata"],
+    ans: 2,
+    exp: "The <strong>hypothalamus</strong> contains thermoreceptors that detect changes in blood temperature and coordinates the body's heating and cooling responses."
+  },
+  {
+    q: "In humans, which response occurs when core body temperature rises above normal?",
+    opts: [
+      "Vasoconstriction of skin arterioles",
+      "Erector pili muscles contracting",
+      "Increased metabolic rate",
+      "Vasodilation of skin arterioles to increase heat loss"
+    ],
+    ans: 3,
+    exp: "<strong>Vasodilation</strong> of arterioles near the skin surface allows more blood to flow close to the surface, increasing heat loss by radiation and convection — helping cool the body."
+  },
+  {
+    q: "Which of the following describes a component of homeostasis that detects changes from the normal range?",
+    opts: [
+      "Receptor / sensor",
+      "Effector",
+      "Hormone",
+      "Synapse"
+    ],
+    ans: 0,
+    exp: "A <strong>receptor (sensor)</strong> detects the stimulus (the change from set point). The effector then brings about the corrective response."
+  },
+  {
+    q: "Childbirth contractions intensify progressively until delivery. What type of feedback does this represent?",
+    opts: [
+      "Negative feedback",
+      "Positive feedback",
+      "Neutral feedback",
+      "Hormonal suppression"
+    ],
+    ans: 1,
+    exp: "<strong>Positive feedback</strong> — oxytocin causes contractions, which stimulate more oxytocin release, amplifying contractions until the baby is delivered."
+  },
+
+  // ── ENDOCRINE SYSTEM ──────────────────────────────────────────────────
+  {
+    section: "🧪 Endocrine System",
+    q: "A student is studying glands in the body. How does a ductless hormone-secreting gland differ from one that secretes through a duct?",
+    opts: [
+      "A gland that secretes substances through a duct",
+      "A gland found only in the brain",
+      "A ductless gland that releases hormones directly into the bloodstream",
+      "A gland that only responds to nerve signals"
+    ],
+    ans: 2,
+    exp: "<strong>Endocrine glands</strong> are ductless — they secrete hormones directly into the bloodstream, which carries them to target organs or cells."
+  },
+  {
+    q: "What is the primary role of a hormone in the body?",
+    opts: [
+      "Speed up chemical reactions as a catalyst",
+      "Insulate nerve fibres",
+      "Provide energy to cells",
+      "Act as a chemical messenger to coordinate bodily functions"
+    ],
+    ans: 3,
+    exp: "Hormones are <strong>chemical messengers</strong> produced by endocrine glands, transported in the blood to target organs where they trigger specific responses."
+  },
+  {
+    q: "A patient has a swollen thyroid. A doctor would examine which region of the body?",
+    opts: [
+      "In the neck, wrapped around the trachea",
+      "Behind the stomach, near the pancreas",
+      "Inside the thoracic cavity near the heart",
+      "Within the brain"
+    ],
+    ans: 0,
+    exp: "The <strong>thyroid gland</strong> is located in the neck, anterior to the trachea. It produces thyroxine which regulates metabolic rate."
+  },
+  {
+    q: "Excessive secretion of insulin from the pancreas would most likely result in:",
+    opts: ["Hyperglycaemia (high blood glucose)", "Hypoglycaemia (low blood glucose)", "Diabetes mellitus", "Increased urine production"],
+    ans: 1,
+    exp: "<strong>Hypersecretion of insulin</strong> causes too much glucose to be removed from the blood, leading to <strong>hypoglycaemia</strong> — dangerously low blood glucose levels."
+  },
+  {
+    q: "The pancreas is often described as having both endocrine AND exocrine functions. Which of these is its endocrine function?",
+    opts: [
+      "Releasing digestive enzymes into the duodenum via a duct",
+      "Absorbing glucose from the intestine",
+      "Secreting insulin and glucagon directly into the bloodstream",
+      "Storing bile"
+    ],
+    ans: 2,
+    exp: "The <strong>islets of Langerhans</strong> in the pancreas are endocrine — they secrete <strong>insulin and glucagon</strong> directly into the blood to regulate blood glucose."
+  },
+  {
+    q: "Which hormone is produced by the adrenal glands in response to stress, preparing the body for 'fight or flight'?",
+    opts: [
+      "Insulin",
+      "Thyroxine",
+      "Oestrogen",
+      "Adrenaline (epinephrine)"
+    ],
+    ans: 3,
+    exp: "<strong>Adrenaline</strong> is released by the adrenal medulla. It increases heart rate, dilates airways, and redirects blood to muscles — the classic fight-or-flight response."
+  },
+
+  // ── KIDNEY & OSMOREGULATION ───────────────────────────────────────────
+  {
+    section: "💧 Kidney & Osmoregulation",
+    q: "Blood is delivered to the kidneys for filtration via which vessel?",
+    opts: [
+      "Afferent arterioles",
+      "Efferent arterioles",
+      "Renal vein",
+      "Capillaries directly"
+    ],
+    ans: 0,
+    exp: "<strong>Afferent arterioles</strong> carry blood INTO the glomerulus of the kidney. Efferent arterioles carry blood away from the glomerulus."
+  },
+  {
+    q: "Fluid has just been filtered from the glomerulus. What is the very next tubular structure it enters?",
+    opts: [
+      "Distal convoluted tubule",
+      "Proximal convoluted tubule",
+      "Loop of Henle",
+      "Collecting duct"
+    ],
+    ans: 1,
+    exp: "Filtrate passes from Bowman's capsule into the <strong>proximal convoluted tubule (PCT)</strong>, where most reabsorption of glucose, amino acids, and water occurs."
+  },
+  {
+    q: "ADH (antidiuretic hormone) acts on the kidneys to:",
+    opts: [
+      "Increase urine volume by reducing water reabsorption",
+      "Increase salt excretion",
+      "Decrease urine volume by increasing water reabsorption",
+      "Reduce blood pressure by dilating arterioles"
+    ],
+    ans: 2,
+    exp: "<strong>ADH</strong> increases the permeability of the collecting duct to water, so more water is reabsorbed back into the blood — producing less, more concentrated urine."
+  },
+  {
+    q: "Where in the brain are osmoreceptors — cells that detect changes in blood water potential — located?",
+    opts: [
+      "Pituitary gland",
+      "Cerebellum",
+      "Amygdala",
+      "Hypothalamus"
+    ],
+    ans: 3,
+    exp: "<strong>Osmoreceptors</strong> are located in the <strong>hypothalamus</strong>. When blood solute concentration rises (low water potential), they trigger ADH release from the posterior pituitary."
+  },
+  {
+    q: "In the loop of Henle, the descending limb is permeable to water but not solutes. The ascending limb is permeable to solutes but not water. What is the overall purpose of this arrangement?",
+    opts: [
+      "To create a concentration gradient in the medulla that drives water reabsorption",
+      "To filter large proteins",
+      "To destroy toxins",
+      "To produce urine directly"
+    ],
+    ans: 0,
+    exp: "The countercurrent multiplier in the loop of Henle builds up a <strong>high solute concentration gradient</strong> in the medulla. This gradient draws water out of the collecting duct when ADH is present."
+  },
+  {
+    q: "A substance passes through the glomerulus into the nephron but does not appear in urine in a healthy person. Which substance fits this description?",
+    opts: [
+      "Urea",
+      "Glucose",
+      "Water",
+      "Creatinine"
+    ],
+    ans: 1,
+    exp: "<strong>Glucose</strong> is filtered into the Bowman's capsule but is completely reabsorbed in the proximal convoluted tubule in a healthy person — so it does not appear in normal urine."
+  },
+  {
+    q: "If a person drinks large amounts of water, what would happen to ADH release and urine output?",
+    opts: [
+      "ADH increases; urine output decreases",
+      "ADH increases; urine output increases",
+      "ADH decreases; urine output increases",
+      "No change occurs"
+    ],
+    ans: 2,
+    exp: "Drinking lots of water dilutes the blood (raises water potential). Osmoreceptors detect this and <strong>suppress ADH release</strong>, so the kidneys reabsorb less water, producing more dilute urine."
+  },
+
+  // ── NERVOUS SYSTEM ────────────────────────────────────────────────────
+  {
+    section: "⚡ Nervous System",
+    q: "What is the function of the myelin sheath that surrounds many axons?",
+    opts: [
+      "To produce neurotransmitters",
+      "To provide nutrition to the neurone",
+      "To connect two neurones at a synapse",
+      "To electrically insulate the axon and speed up nerve impulse conduction"
+    ],
+    ans: 3,
+    exp: "The <strong>myelin sheath</strong> is a fatty insulating layer formed by Schwann cells. It causes the nerve impulse to 'jump' between nodes of Ranvier (saltatory conduction), greatly increasing speed."
+  },
+  {
+    q: "What is the function of dendrites on a neurone?",
+    opts: [
+      "Carry impulses towards the cell body from receptors or other neurones",
+      "Carry impulses away from the cell body to the next cell",
+      "Produce the action potential",
+      "Release neurotransmitters"
+    ],
+    ans: 0,
+    exp: "<strong>Dendrites</strong> receive signals from other neurones or receptors and carry those impulses <strong>towards</strong> the cell body. The axon carries impulses away."
+  },
+  {
+    q: "After a large meal, the body prioritises digestion. Which division of the autonomic nervous system dominates during this state?",
+    opts: [
+      "Somatic nervous system",
+      "Parasympathetic nervous system",
+      "Sympathetic nervous system",
+      "Central nervous system"
+    ],
+    ans: 1,
+    exp: "The <strong>parasympathetic</strong> nervous system promotes rest and digestion — it slows the heart, increases peristalsis, and increases intestinal secretions. Sympathetic is fight-or-flight."
+  },
+  {
+    q: "A reflex arc allows rapid, involuntary responses. In the correct order, which structures are involved?",
+    opts: [
+      "Brain → spinal cord → muscle",
+      "Sensory neurone → receptor → brain → effector",
+      "Receptor → sensory neurone → relay neurone → motor neurone → effector",
+      "Effector → motor neurone → receptor"
+    ],
+    ans: 2,
+    exp: "A <strong>reflex arc</strong>: Receptor → Sensory neurone → Relay neurone (in spinal cord) → Motor neurone → Effector (muscle/gland). This bypasses the brain for speed."
+  },
+  {
+    q: "Which part of the brain controls vital functions such as heart rate, breathing rate, and blood pressure?",
+    opts: ["Cerebrum", "Hypothalamus", "Cerebellum", "Medulla oblongata"],
+    ans: 3,
+    exp: "The <strong>medulla oblongata</strong> (brainstem) regulates autonomic, life-sustaining functions: heart rate, breathing rhythm, and blood pressure."
+  },
+  {
+    q: "What happens at a synapse when a nerve impulse arrives at the pre-synaptic terminal?",
+    opts: [
+      "Synaptic vesicles release neurotransmitters into the synaptic cleft",
+      "Electrical current jumps directly to the next neurone",
+      "The axon grows longer",
+      "Calcium ions are pumped out of the cell"
+    ],
+    ans: 0,
+    exp: "When an action potential arrives, <strong>calcium ions</strong> enter the pre-synaptic knob, causing synaptic vesicles to fuse with the membrane and release <strong>neurotransmitters</strong> (e.g. acetylcholine) into the cleft."
+  },
+  {
+    q: "Which neurotransmitter is released at the neuromuscular junction to trigger muscle contraction?",
+    opts: [
+      "Dopamine",
+      "Acetylcholine",
+      "Serotonin",
+      "Noradrenaline"
+    ],
+    ans: 1,
+    exp: "<strong>Acetylcholine (ACh)</strong> is released from motor neurones at the neuromuscular junction. It binds to receptors on the muscle fibre, causing depolarisation and ultimately contraction."
+  },
+  {
+    q: "During an action potential, depolarisation occurs when:",
+    opts: [
+      "Potassium ions rush out of the neurone",
+      "Chloride ions enter the neurone",
+      "Sodium ions rush into the neurone, making the inside more positive",
+      "The resting potential is maintained"
+    ],
+    ans: 2,
+    exp: "Depolarisation: voltage-gated <strong>sodium (Na⁺) channels</strong> open, sodium rushes in, and the membrane potential rises from about −70mV to +40mV. This is the 'rising phase' of the action potential."
+  },
+  {
+    q: "Which part of the brain, if damaged, would most likely impair balance and co-ordination of movement?",
+    opts: [
+      "Frontal lobe",
+      "Thalamus",
+      "Medulla oblongata",
+      "Cerebellum"
+    ],
+    ans: 3,
+    exp: "The <strong>cerebellum</strong> is responsible for co-ordinating movement, balance, and fine motor control. Damage causes ataxia (loss of muscle co-ordination)."
+  },
+  {
+    q: "The sympathetic nervous system releases which neurotransmitter at effector organs?",
+    opts: [
+      "Noradrenaline (norepinephrine) at most effectors",
+      "Acetylcholine only",
+      "Serotonin",
+      "GABA"
+    ],
+    ans: 0,
+    exp: "The sympathetic nervous system primarily releases <strong>noradrenaline</strong> at target organs, causing fight-or-flight responses such as increased heart rate and dilated pupils."
+  },
+
+  // ── MUSCULOSKELETAL SYSTEM ────────────────────────────────────────────
+  {
+    section: "💪 Musculoskeletal System",
+    q: "According to the sliding filament theory, muscle contraction occurs when:",
+    opts: ["Myosin filaments grow longer", "Actin filaments slide over myosin filaments, shortening the sarcomere", "ATP is converted to ADP without movement", "Calcium ions bind directly to myosin"],
+    ans: 1,
+    exp: "In the <strong>sliding filament theory</strong>, myosin heads bind to actin, then pivot (power stroke), pulling actin filaments towards the centre of the sarcomere — shortening the muscle."
+  },
+  {
+    q: "What is the role of calcium ions in muscle contraction?",
+    opts: [
+      "They form cross-bridges with actin directly",
+      "They provide energy for contraction",
+      "They bind to troponin, which moves tropomyosin away, exposing actin binding sites for myosin",
+      "They relax the muscle after contraction"
+    ],
+    ans: 2,
+    exp: "<strong>Ca²⁺</strong> binds to troponin on the actin filament, causing tropomyosin to shift and expose the myosin-binding sites on actin — allowing cross-bridge formation and contraction."
+  },
+  {
+    q: "A biology student lists the roles of the human skeleton. Which item on their list is incorrect?",
+    opts: [
+      "Mineral storage (calcium and phosphorus)",
+      "Protection of vital organs",
+      "Attachment points for muscles to enable movement",
+      "Heat generation through direct absorption of sunlight"
+    ],
+    ans: 3,
+    exp: "The skeleton does NOT absorb sunlight for heat. Its functions include <strong>support, protection, movement, blood cell production, and mineral storage</strong>."
+  },
+  {
+    q: "Tendons connect muscles to bones. Which property of collagen makes it ideal for this role?",
+    opts: [
+      "It is strong, flexible, and insoluble, resisting pulling forces without dissolving",
+      "It is elastic and stretchy, returning energy like a spring",
+      "It conducts electrical signals",
+      "It is highly soluble allowing rapid exchange of nutrients"
+    ],
+    ans: 0,
+    exp: "Collagen in tendons must be <strong>strong</strong> (resist tension), <strong>flexible</strong> (allow movement without snapping), and <strong>insoluble</strong> (resist breakdown in body fluids)."
+  },
+  {
+    q: "Slow-twitch muscle fibres are best adapted for:",
+    opts: ["Short explosive sprints needing maximum force quickly", "Sustained, endurance activities such as long-distance running", "Heavy weightlifting sets of 1–3 reps", "Quick reflex reactions"],
+    ans: 1,
+    exp: "<strong>Slow-twitch (Type I)</strong> fibres are rich in mitochondria and myoglobin, use aerobic respiration, fatigue slowly — perfect for <strong>endurance</strong> activities like marathon running."
+  },
+  {
+    q: "Fast-twitch muscle fibres produce energy mainly through:",
+    opts: [
+      "Aerobic respiration using fatty acids",
+      "Photosynthesis",
+      "Anaerobic respiration / phosphocreatine system — generating rapid force for short bursts",
+      "Slow oxidation of amino acids"
+    ],
+    ans: 2,
+    exp: "<strong>Fast-twitch (Type II)</strong> fibres rely on <strong>anaerobic</strong> energy systems, producing rapid, powerful contractions — but fatigue quickly. Used in sprinting and explosive movements."
+  },
+  {
+    q: "A ligament connects:",
+    opts: [
+      "Muscle to bone",
+      "Nerve to muscle",
+      "Cartilage to muscle",
+      "Bone to bone at a joint"
+    ],
+    ans: 3,
+    exp: "<strong>Ligaments</strong> connect bone to bone, stabilising joints. Tendons connect muscle to bone. Both are made of collagen."
+  },
+
+  // ── CARDIOVASCULAR SYSTEM ─────────────────────────────────────────────
+  {
+    section: "❤️ Cardiovascular System",
+    q: "Which chamber of the heart pumps deoxygenated blood to the lungs?",
+    opts: [
+      "Right ventricle",
+      "Left ventricle",
+      "Right atrium",
+      "Left atrium"
+    ],
+    ans: 0,
+    exp: "The <strong>right ventricle</strong> pumps deoxygenated blood through the pulmonary artery to the lungs for oxygenation. The left ventricle pumps oxygenated blood to the body."
+  },
+  {
+    q: "Why does the left ventricle have thicker walls than the right ventricle?",
+    opts: ["It holds more blood volume", "It must generate higher pressure to pump blood around the entire body", "It contains more valves", "It receives blood from both atria"],
+    ans: 1,
+    exp: "The <strong>left ventricle</strong> pumps blood into the systemic circulation (whole body) — a much longer, higher-resistance circuit than the pulmonary circuit — requiring greater muscular force."
+  },
+  {
+    q: "Where does the heartbeat originate?",
+    opts: ["Atrioventricular node (AV node)", "Purkinje fibres", "Sinoatrial node (SA node) in the right atrium", "Bundle of His"],
+    ans: 2,
+    exp: "The <strong>sinoatrial (SA) node</strong> is the heart's natural pacemaker, located in the right atrium. It generates electrical impulses that spread across the atria, triggering contraction."
+  },
+  {
+    q: "During ventricular systole, which valve opens to allow blood to leave the left ventricle?",
+    opts: [
+      "Bicuspid (mitral) valve",
+      "Tricuspid valve",
+      "Pulmonary semilunar valve",
+      "Aortic semilunar valve"
+    ],
+    ans: 3,
+    exp: "During <strong>ventricular systole</strong>, pressure forces open the <strong>aortic valve</strong> (and pulmonary valve on the right side), allowing blood to exit. The AV valves (bicuspid/tricuspid) are closed."
+  },
+  {
+    q: "Which vessel carries oxygenated blood from the lungs back to the heart?",
+    opts: [
+      "Pulmonary vein",
+      "Aorta",
+      "Pulmonary artery",
+      "Superior vena cava"
+    ],
+    ans: 0,
+    exp: "The <strong>pulmonary vein</strong> is unique — it is a vein that carries oxygenated blood from the lungs to the left atrium. Most veins carry deoxygenated blood."
+  },
+  {
+    q: "How does the autonomic nervous system control heart rate?",
+    opts: ["Sympathetic nerves slow the heart; parasympathetic speed it up", "Sympathetic nerves increase heart rate; parasympathetic decrease it", "Only the somatic nervous system controls heart rate", "Heart rate is unaffected by the nervous system"],
+    ans: 1,
+    exp: "<strong>Sympathetic</strong> stimulation (via noradrenaline) increases heart rate. <strong>Parasympathetic</strong> stimulation (via acetylcholine, vagus nerve) decreases heart rate."
+  },
+  {
+    q: "What is the correct description of an artery?",
+    opts: [
+      "Thin-walled, with valves, carries blood towards the heart",
+      "Microscopic vessel allowing exchange of gases and nutrients",
+      "Thick-walled, elastic, no valves, carries blood away from the heart",
+      "Carries only deoxygenated blood"
+    ],
+    ans: 2,
+    exp: "<strong>Arteries</strong> carry blood away from the heart, have thick muscular/elastic walls to withstand high pressure, and have no valves. Veins carry blood to the heart and have valves."
+  },
+  {
+    q: "Which blood vessel type is the site of gas, nutrient, and waste exchange with tissues?",
+    opts: [
+      "Arteries",
+      "Veins",
+      "Arterioles",
+      "Capillaries"
+    ],
+    ans: 3,
+    exp: "<strong>Capillaries</strong> have walls just one cell thick (endothelium), allowing efficient exchange of oxygen, CO₂, glucose, and waste products between blood and body cells."
+  },
+
+  // ── REPRODUCTION ──────────────────────────────────────────────────────
+  {
+    section: "🧬 Reproduction",
+    q: "Which hormone is responsible for initiating spermatogenesis (sperm production) in males?",
+    opts: [
+      "Follicle-stimulating hormone (FSH)",
+      "Luteinising hormone (LH)",
+      "Testosterone only",
+      "Oestrogen"
+    ],
+    ans: 0,
+    exp: "<strong>FSH</strong> (from the anterior pituitary) stimulates Sertoli cells in the testes to support spermatogenesis. LH stimulates Leydig cells to produce testosterone."
+  },
+  {
+    q: "A man has a tumour affecting the interstitial cells between the seminiferous tubules. Which hormone would most likely be reduced?",
+    opts: [
+      "FSH",
+      "Testosterone",
+      "Sperm cells",
+      "Progesterone"
+    ],
+    ans: 1,
+    exp: "<strong>Leydig cells</strong> (interstitial cells) are located between the seminiferous tubules and produce <strong>testosterone</strong> in response to LH stimulation."
+  },
+  {
+    q: "A fertility specialist monitors hormone levels during the follicular phase. Which pair of hormones drives follicle development and oocyte maturation?",
+    opts: ["FSH and progesterone", "LH and oestrogen", "FSH and LH", "Progesterone and oestrogen"],
+    ans: 2,
+    exp: "<strong>FSH</strong> stimulates follicle development and oestrogen production. A surge of <strong>LH</strong> triggers ovulation. Together, FSH and LH regulate follicle maturation and oocyte release."
+  },
+  {
+    q: "In a normal pregnancy, where does implantation of a fertilised egg (blastocyst) occur?",
+    opts: ["Fallopian tube", "Cervix", "Ovary", "Endometrium of the uterus"],
+    ans: 3,
+    exp: "The blastocyst implants into the <strong>endometrium</strong> (uterine wall) — typically in the upper, posterior wall. Implantation in the fallopian tube causes a dangerous ectopic pregnancy."
+  },
+  {
+    q: "Where does fertilisation normally occur in the female reproductive system?",
+    opts: [
+      "Fallopian tube (oviduct)",
+      "Cervix",
+      "Uterus",
+      "Ovary"
+    ],
+    ans: 0,
+    exp: "Fertilisation typically occurs in the <strong>fallopian tube</strong> (ampulla region), shortly after ovulation. The fertilised egg then travels to the uterus for implantation over several days."
+  },
+  {
+    q: "Which hormone maintains the uterine lining during the second half of the menstrual cycle and in early pregnancy?",
+    opts: [
+      "Oestrogen",
+      "Progesterone",
+      "FSH",
+      "LH"
+    ],
+    ans: 1,
+    exp: "<strong>Progesterone</strong> is produced by the corpus luteum after ovulation. It maintains the thick uterine lining (endometrium) ready for implantation and, if pregnancy occurs, is maintained by hCG."
+  },
+  {
+    q: "The seminal vesicles contribute to which of the following?",
+    opts: [
+      "Sperm production",
+      "Testosterone production",
+      "Most of the volume of seminal fluid (semen)",
+      "Maturation of sperm"
+    ],
+    ans: 2,
+    exp: "The <strong>seminal vesicles</strong> produce approximately 60–70% of seminal fluid, a fructose-rich secretion that provides energy for sperm and neutralises vaginal acidity."
+  },
+
+  // ── IMMUNE SYSTEM ─────────────────────────────────────────────────────
+  {
+    section: "🛡️ Immune System",
+    q: "A pathogen attempts to enter the body. Which of the following acts as an immediate physical or chemical barrier before the immune system is activated?",
+    opts: [
+      "Phagocytosis by macrophages",
+      "Antibody production by B-cells",
+      "T-lymphocyte activation",
+      "The skin acting as a physical barrier"
+    ],
+    ans: 3,
+    exp: "The <strong>first line of defence</strong> consists of physical and chemical barriers: skin, mucus, stomach acid, tears, and cilia. These prevent pathogens from entering the body."
+  },
+  {
+    q: "Phagocytes engulf and destroy pathogens. After digesting a pathogen, what does a phagocyte display on its surface?",
+    opts: [
+      "Antigens (antigen-presenting cell)",
+      "Antibodies",
+      "Memory cells",
+      "Lymphokines only"
+    ],
+    ans: 0,
+    exp: "After destroying a pathogen, the phagocyte becomes an <strong>antigen-presenting cell (APC)</strong> — displaying antigen fragments on MHC proteins to activate Helper T cells."
+  },
+  {
+    q: "Which type of white blood cell activates the adaptive immune response by signalling to both B-cells and cytotoxic T-cells?",
+    opts: ["Neutrophil", "Helper T cell (CD4+)", "Memory B cell", "Natural killer cell"],
+    ans: 1,
+    exp: "<strong>Helper T cells</strong> are the 'master coordinators' of the adaptive immune response — they release cytokines to activate B-cells (antibody production) and cytotoxic T-cells (cell killing)."
+  },
+  {
+    q: "What is the main advantage of memory cells in the immune system?",
+    opts: [
+      "They destroy pathogens directly in the first exposure",
+      "They produce complement proteins",
+      "They allow a faster, larger antibody response upon second exposure to the same antigen",
+      "They act as the first line of defence"
+    ],
+    ans: 2,
+    exp: "<strong>Memory B and T cells</strong> persist long after infection. On second exposure, they rapidly proliferate and produce large amounts of antibodies — this is the basis of <strong>vaccination</strong>."
+  },
+  {
+    q: "B lymphocytes differentiate into plasma cells. What do plasma cells produce?",
+    opts: [
+      "Phagosomes",
+      "Antigens",
+      "Helper T cells",
+      "Antibodies (immunoglobulins)"
+    ],
+    ans: 3,
+    exp: "<strong>Plasma cells</strong> are antibody-secreting factories, each producing thousands of antibodies per second. Antibodies are Y-shaped proteins that bind specifically to antigens."
+  },
+  {
+    q: "Why does antibody production during a secondary immune response reach a higher level and occur faster than the primary response?",
+    opts: [
+      "Memory B cells from the first exposure rapidly proliferate and differentiate into plasma cells",
+      "More pathogens are present the second time",
+      "The pathogen becomes weaker",
+      "Phagocytes work harder on second exposure"
+    ],
+    ans: 0,
+    exp: "<strong>Memory B cells</strong> produced during the primary response survive for years. On re-exposure, they quickly divide and become plasma cells — producing antibodies faster and in higher quantities."
+  },
+  {
+    q: "Which of the following correctly describes the role of cytotoxic T cells (CD8+)?",
+    opts: ["Produce antibodies against extracellular pathogens", "Directly kill infected body cells by inducing apoptosis", "Present antigens to B cells", "Release histamine during allergic reactions"],
+    ans: 1,
+    exp: "<strong>Cytotoxic T cells</strong> recognise and destroy body cells that are infected with viruses (or cancerous). They bind to infected cells and release perforin, inducing programmed cell death (apoptosis)."
+  },
+
+  // ── DIGESTION ─────────────────────────────────────────────────────────
+  {
+    section: "🍎 Digestion & Absorption",
+    q: "What is peristalsis?",
+    opts: [
+      "Chemical digestion of food by enzymes",
+      "Absorption of nutrients across the intestinal wall",
+      "Rhythmic muscular contractions that move food along the digestive tract",
+      "Secretion of bile from the liver"
+    ],
+    ans: 2,
+    exp: "<strong>Peristalsis</strong> is the wave-like contraction and relaxation of smooth muscle in the gut wall that propels food from the oesophagus through to the rectum."
+  },
+  {
+    q: "In the small intestine, glucose and amino acids are absorbed into:",
+    opts: [
+      "Lacteals (lymph capillaries)",
+      "Adipose tissue",
+      "The hepatic portal vein directly",
+      "Blood capillaries within the villi"
+    ],
+    ans: 3,
+    exp: "<strong>Glucose and amino acids</strong> are water-soluble and enter the <strong>blood capillaries</strong> within the villi. From there they travel via the hepatic portal vein to the liver."
+  },
+  {
+    q: "Fatty acids and glycerol produced by fat digestion are absorbed via:",
+    opts: [
+      "Lacteals (lymphatic capillaries) in the villi",
+      "Blood capillaries directly into the hepatic portal vein",
+      "Diffusion across the stomach wall",
+      "Bile duct"
+    ],
+    ans: 0,
+    exp: "<strong>Fatty acids and glycerol</strong> are reassembled into triglycerides, packaged into chylomicrons, and absorbed into <strong>lacteals</strong> (lymph capillaries) — eventually reaching the bloodstream via the thoracic duct."
+  },
+  {
+    q: "How does water move from the gut lumen into the blood during digestion?",
+    opts: ["Active transport using ATP-powered pumps", "Osmosis — from high water potential in the gut to lower water potential in the blood", "Filtration under pressure", "Endocytosis"],
+    ans: 1,
+    exp: "<strong>Osmosis</strong> — as solutes (glucose, amino acids) are absorbed into the blood, water potential decreases in the blood. Water moves by osmosis through the partially permeable gut wall to equalise."
+  },
+  {
+    q: "Where is bile produced, and where is it stored before release?",
+    opts: [
+      "Produced in the pancreas, stored in the stomach",
+      "Produced in the gallbladder, stored in the liver",
+      "Produced in the liver, stored in the gallbladder",
+      "Produced and stored in the small intestine"
+    ],
+    ans: 2,
+    exp: "<strong>Bile</strong> is produced by the <strong>liver</strong> and stored in the <strong>gallbladder</strong>. It is released into the duodenum to emulsify fats — increasing their surface area for lipase enzymes."
+  },
+  {
+    q: "Which enzyme breaks down starch into maltose in the mouth and small intestine?",
+    opts: [
+      "Lipase",
+      "Protease",
+      "Lactase",
+      "Amylase"
+    ],
+    ans: 3,
+    exp: "<strong>Amylase</strong> (salivary and pancreatic) catalyses the hydrolysis of starch into maltose. It works in the mouth and small intestine."
+  },
+  {
+    q: "The villi of the small intestine increase the surface area for absorption. What further increases the surface area on each villus cell?",
+    opts: ["Microvilli (brush border)", "Lacteals", "Goblet cells", "Smooth muscle"],
+    ans: 0,
+    exp: "<strong>Microvilli</strong> on the apical surface of epithelial cells form the 'brush border', dramatically increasing the surface area available for nutrient absorption."
+  },
+
+  // ── GENETICS ──────────────────────────────────────────────────────────
+  {
+    section: "🧫 Genetics & Inheritance",
+    q: "A plant is heterozygous for height, with alleles Tt (T = tall, t = short). What gametes can it produce?",
+    opts: [
+      "100% Tt gametes",
+      "50% T and 50% t gametes",
+      "75% T and 25% t gametes",
+      "25% T and 75% t gametes"
+    ],
+    ans: 1,
+    exp: "Heterozygous plants (Tt) undergo meiosis and produce gametes carrying <strong>either T or t</strong>, in equal proportions: 50% T and 50% t."
+  },
+  {
+    q: "What is a phenotype?",
+    opts: [
+      "The alleles present in an organism's DNA",
+      "The dominant allele only",
+      "The physical, observable characteristics of an organism",
+      "The recessive allele only"
+    ],
+    ans: 2,
+    exp: "The <strong>phenotype</strong> is the observable, physical expression of the genotype — e.g., blue eyes, tall height, blood group O. The genotype is the underlying allele combination."
+  },
+  {
+    q: "If both parents are carriers (heterozygous) for cystic fibrosis (Ff × Ff), what is the probability of having a child with cystic fibrosis?",
+    opts: [
+      "0% — carriers cannot pass on the disease",
+      "100%",
+      "50%",
+      "25%"
+    ],
+    ans: 3,
+    exp: "Ff × Ff cross gives: FF (25%), Ff (50%), ff (25%). The <strong>ff genotype</strong> causes cystic fibrosis — a 1 in 4 (25%) chance per pregnancy."
+  },
+  {
+    q: "An organism has two identical alleles for a trait (e.g., TT or tt). This is described as:",
+    opts: [
+      "Homozygous",
+      "Heterozygous",
+      "Codominant",
+      "Incomplete dominant"
+    ],
+    ans: 0,
+    exp: "<strong>Homozygous</strong> means both alleles at a gene locus are identical — either both dominant (TT) or both recessive (tt). Heterozygous means one of each (Tt)."
+  },
+  {
+    q: "In genetics, which of the following represents a genotype?",
+    opts: [
+      "Brown eyes",
+      "Bb",
+      "Tall",
+      "Sickle-cell anaemia"
+    ],
+    ans: 1,
+    exp: "A <strong>genotype</strong> is written using allele symbols (e.g., <strong>Bb</strong>). Brown eyes and sickle-cell anaemia are phenotypes — the observable outcomes of those alleles."
+  },
+  {
+    q: "Cystic fibrosis is caused by a recessive allele (f). A child is born with cystic fibrosis. Which combination of parental genotypes is possible?",
+    opts: ["FF × FF", "FF × Ff", "Ff × Ff", "FF × ff"],
+    ans: 2,
+    exp: "For a child to inherit ff (cystic fibrosis), <strong>both parents must carry at least one f allele</strong>. Ff × Ff is the classic carrier cross that can produce ff offspring."
+  },
+  {
+    q: "Which term describes the situation where two different alleles are both fully expressed in the phenotype (e.g. AB blood type)?",
+    opts: [
+      "Recessive inheritance",
+      "Epistasis",
+      "Incomplete dominance",
+      "Codominance"
+    ],
+    ans: 3,
+    exp: "<strong>Codominance</strong>: both alleles are fully expressed. Example: blood group AB — both A and B antigens are present on red blood cells. Neither allele masks the other."
+  },
+
+  // ── MIXED / INTEGRATION ──────────────────────────────────────────────
+  {
+    section: "🔬 Mixed & Integration Questions",
+    q: "Which of the following vessels carries blood at the LOWEST pressure?",
+    opts: [
+      "Veins returning to the right atrium",
+      "Pulmonary artery",
+      "Capillaries",
+      "Aorta"
+    ],
+    ans: 0,
+    exp: "Blood pressure drops progressively as blood moves from arteries → capillaries → veins. <strong>Veins</strong> returning to the heart have the lowest pressure (near zero), requiring valves to prevent backflow."
+  },
+  {
+    q: "A patient has damaged their cerebellum. Which problem would you most expect them to experience?",
+    opts: [
+      "Memory loss and personality change",
+      "Poor co-ordination, balance, and fine motor control",
+      "Loss of vision",
+      "Inability to regulate heart rate"
+    ],
+    ans: 1,
+    exp: "The <strong>cerebellum</strong> co-ordinates movement and maintains balance. Cerebellar damage causes ataxia — unsteady gait, tremor, and impaired fine motor skills."
+  },
+  {
+    q: "What is the role of FSH in females during the menstrual cycle?",
+    opts: [
+      "Triggers ovulation directly",
+      "Maintains the uterine lining after ovulation",
+      "Stimulates follicle development and oestrogen production in the ovaries",
+      "Causes menstruation"
+    ],
+    ans: 2,
+    exp: "<strong>FSH</strong> (follicle-stimulating hormone) from the anterior pituitary stimulates the growth of a follicle in the ovary and promotes oestrogen production by follicle cells."
+  },
+  {
+    q: "Glucose is found in blood but not in normal urine. Explain why.",
+    opts: [
+      "Glucose is too large to be filtered into the Bowman's capsule",
+      "Glucose is stored in the loop of Henle",
+      "Glucose is destroyed by kidney enzymes",
+      "Glucose is filtered but completely reabsorbed in the proximal convoluted tubule"
+    ],
+    ans: 3,
+    exp: "Glucose passes through the glomerulus into the filtrate but is <strong>actively reabsorbed</strong> back into the blood in the <strong>proximal convoluted tubule</strong> — so none should appear in urine in healthy individuals."
+  },
+  {
+    q: "Which statement correctly explains why arteries have thick muscular walls?",
+    opts: [
+      "To withstand and maintain the high blood pressure generated by the heart",
+      "To allow blood to flow backwards towards the heart",
+      "To maximise surface area for gas exchange",
+      "To allow slow, controlled filtration of plasma"
+    ],
+    ans: 0,
+    exp: "The left ventricle pumps blood at high pressure. <strong>Artery walls</strong> must be thick and elastic to withstand this pressure without rupturing, and to help maintain pressure between heartbeats."
+  },
+  {
+    q: "A student exercises intensively. Which type of muscle fibre would be most heavily recruited for a 100m sprint?",
+    opts: [
+      "Slow-twitch (Type I) fibres",
+      "Fast-twitch (Type II) fibres",
+      "Cardiac muscle fibres",
+      "Smooth muscle fibres"
+    ],
+    ans: 1,
+    exp: "<strong>Fast-twitch (Type II)</strong> fibres generate rapid, powerful contractions using anaerobic energy — ideal for explosive, short-duration activities like sprinting."
+  },
+  {
+    q: "What prevents blood from flowing backwards through the heart's chambers?",
+    opts: [
+      "The pacemaker sends electrical signals",
+      "Muscular contractions of the aorta",
+      "Heart valves — atrioventricular and semilunar valves",
+      "The pericardium"
+    ],
+    ans: 2,
+    exp: "<strong>Heart valves</strong> — bicuspid, tricuspid (AV valves) and aortic/pulmonary (semilunar) valves — open and close in response to pressure differences, ensuring one-way blood flow."
+  },
+  {
+    q: "How does the body detect a fall in blood glucose concentration?",
+    opts: [
+      "Osmoreceptors in the hypothalamus",
+      "Adrenaline receptors in the liver",
+      "Beta cells detect high glucose and release insulin",
+      "Alpha cells in the islets of Langerhans detect low glucose and release glucagon"
+    ],
+    ans: 3,
+    exp: "<strong>Alpha cells</strong> in the pancreatic islets of Langerhans detect low blood glucose and release <strong>glucagon</strong>, which stimulates the liver to convert glycogen to glucose (glycogenolysis)."
+  },
+  {
+    q: "The refractory period after an action potential means that:",
+    opts: [
+      "A second action potential cannot be generated until the neurone has repolarised — ensuring one-way transmission",
+      "Another action potential can fire immediately",
+      "The synapse releases more neurotransmitters",
+      "Dendrites become more sensitive"
+    ],
+    ans: 0,
+    exp: "During the <strong>refractory period</strong>, Na⁺ channels are inactivated and K⁺ channels are open. This prevents backward propagation of the impulse, ensuring nerve signals travel in one direction only."
+  },
+  {
+    q: "Which molecule is the direct energy source for myosin heads during muscle contraction?",
+    opts: [
+      "Glucose",
+      "ATP (adenosine triphosphate)",
+      "Creatine phosphate",
+      "Glycogen"
+    ],
+    ans: 1,
+    exp: "<strong>ATP</strong> binds to the myosin head, causing it to detach from actin. Hydrolysis of ATP to ADP + Pi provides the energy to 'recock' the myosin head for the next power stroke."
+  },
+  {
+    q: "Which of the following correctly distinguishes veins from arteries?",
+    opts: [
+      "Veins carry oxygenated blood; arteries carry deoxygenated blood",
+      "Arteries carry blood toward the heart; veins carry blood away",
+      "Veins have valves and thinner walls; arteries have thick elastic walls and no valves",
+      "Veins are always found deeper in the body than arteries"
+    ],
+    ans: 2,
+    exp: "<strong>Veins</strong> have thinner walls (lower pressure), contain valves to prevent backflow, and carry blood toward the heart. <strong>Arteries</strong> have thick, elastic walls and no valves, carrying blood away from the heart."
+  },
+  {
+    q: "In the context of immunology, what is an antigen?",
+    opts: [
+      "A protein produced by B cells to destroy pathogens",
+      "A chemical released during inflammation",
+      "A type of white blood cell",
+      "A molecule (usually on a pathogen's surface) that triggers an immune response"
+    ],
+    ans: 3,
+    exp: "An <strong>antigen</strong> is any molecule (typically a protein or glycoprotein on a pathogen's surface) that the immune system recognises as foreign and mounts a response against."
+  },
+  {
+    q: "What is the function of the sinoatrial (SA) node?",
+    opts: [
+      "To generate the electrical impulse that initiates each heartbeat — the natural pacemaker",
+      "To delay the electrical signal between atria and ventricles",
+      "To increase blood pressure in the aorta",
+      "To control the opening of heart valves"
+    ],
+    ans: 0,
+    exp: "The <strong>SA node</strong> is the heart's natural pacemaker, spontaneously generating electrical impulses (~70/min at rest) that spread across both atria, causing them to contract simultaneously."
+  },
+  {
+    q: "How does the structure of the alveoli maximise gas exchange efficiency?",
+    opts: ["Thick walls to slow gas diffusion", "Large surface area, thin walls (one cell thick), rich blood supply, and moist lining", "No blood supply — gases diffuse by themselves", "Large volume with low surface area"],
+    ans: 1,
+    exp: "Alveoli maximise diffusion via: <strong>large surface area</strong> (~70m²), <strong>thin walls</strong> (one cell thick = short diffusion path), <strong>rich capillary network</strong>, and a <strong>moist surface</strong> to dissolve gases."
+  },
+  {
+    q: "Which enzyme in the stomach breaks down proteins?",
+    opts: ["Amylase", "Lipase", "Pepsin (a protease)", "Maltase"],
+    ans: 2,
+    exp: "<strong>Pepsin</strong> is a protease produced in the stomach (as inactive pepsinogen) that is activated by the acidic environment (HCl). It hydrolyses proteins into shorter polypeptides."
+  },
+  {
+    q: "What does the term 'osmoregulation' mean?",
+    opts: [
+      "Regulation of body temperature",
+      "Regulation of hormone levels",
+      "Regulation of blood glucose",
+      "Regulation of water and solute balance in body fluids"
+    ],
+    ans: 3,
+    exp: "<strong>Osmoregulation</strong> is the control of water potential and solute concentration of body fluids (blood, tissue fluid) — primarily carried out by the kidneys under control of ADH."
+  },
+  {
+    q: "During a secondary immune response, which cells proliferate rapidly to produce large quantities of antibodies?",
+    opts: [
+      "Memory B cells (activated by the antigen)",
+      "Neutrophils",
+      "Mast cells",
+      "Phagocytes"
+    ],
+    ans: 0,
+    exp: "<strong>Memory B cells</strong>, produced during the primary response, persist long-term. On re-exposure to the same antigen, they rapidly clone and differentiate into plasma cells, producing a fast, large antibody surge."
+  },
+  {
+    q: "What is the role of the AV (atrioventricular) node in cardiac conduction?",
+    opts: ["It generates the initial pacemaker signal", "It briefly delays the impulse, allowing atria to finish contracting before ventricles contract", "It closes the bicuspid valve", "It increases heart rate during exercise"],
+    ans: 1,
+    exp: "The <strong>AV node</strong> introduces a brief delay (~0.1 seconds) in the conduction pathway, ensuring the atria have emptied into the ventricles before ventricular contraction begins."
+  },
+  {
+    q: "In DNA, adenine always pairs with which base?",
+    opts: ["Cytosine", "Guanine", "Thymine", "Uracil"],
+    ans: 2,
+    exp: "In DNA, <strong>adenine (A) pairs with thymine (T)</strong> via two hydrogen bonds, and guanine (G) pairs with cytosine (C) via three hydrogen bonds. (In RNA, uracil replaces thymine.)"
+  },
+  {
+    q: "Which layer of the skin contains sensory receptors for temperature, touch, and pain?",
+    opts: [
+      "Epidermis (top layer)",
+      "Stratum corneum",
+      "Hypodermis (subcutaneous fat)",
+      "Dermis (middle layer, contains nerve endings)"
+    ],
+    ans: 3,
+    exp: "The <strong>dermis</strong> contains sensory nerve endings (Meissner's corpuscles, Pacinian corpuscles, free nerve endings), blood vessels, sweat glands, and hair follicles."
+  },
+  {
+    q: "What is the function of glucagon released by the pancreas?",
+    opts: [
+      "Raise blood glucose by stimulating glycogen breakdown (glycogenolysis) in the liver",
+      "Lower blood glucose by stimulating uptake into cells",
+      "Stimulate insulin secretion",
+      "Increase urine production"
+    ],
+    ans: 0,
+    exp: "<strong>Glucagon</strong> (from alpha cells) acts on the liver to convert glycogen → glucose (glycogenolysis) and promotes gluconeogenesis — raising blood glucose levels back to normal."
+  },
+  {
+    q: "What type of immunity does vaccination provide?",
+    opts: ["Passive natural immunity", "Active artificial immunity", "Passive artificial immunity", "Natural innate immunity"],
+    ans: 1,
+    exp: "<strong>Active artificial immunity</strong>: the vaccine contains antigens that stimulate your immune system to produce memory cells, without causing disease. 'Active' = your body makes the response; 'artificial' = it was induced deliberately."
+  },
+  {
+    q: "Which part of the neurone carries the electrical impulse AWAY from the cell body?",
+    opts: [
+      "Dendrites",
+      "Cell body (soma)",
+      "Axon",
+      "Myelin sheath"
+    ],
+    ans: 2,
+    exp: "The <strong>axon</strong> carries the action potential away from the cell body towards the next neurone or effector (muscle/gland). Dendrites carry signals towards the cell body."
+  },
+  {
+    q: "The loop of Henle is particularly long in animals adapted to dry environments. Why?",
+    opts: [
+      "To filter more blood per minute",
+      "To produce more urine and cool the body",
+      "To increase blood pressure",
+      "To create a steeper concentration gradient, allowing more water to be reabsorbed and more concentrated urine to be produced"
+    ],
+    ans: 3,
+    exp: "A <strong>longer loop of Henle</strong> creates a steeper osmotic gradient in the medulla. This allows more water to be reabsorbed by osmosis, producing very concentrated urine — essential in desert-adapted mammals."
+  },
+  {
+    q: "What does the sympathetic nervous system do to the pupils of the eye?",
+    opts: [
+      "Dilates the pupils (mydriasis)",
+      "Constricts the pupils (miosis)",
+      "Has no effect on pupils",
+      "Causes the lens to accommodate"
+    ],
+    ans: 0,
+    exp: "The <strong>sympathetic nervous system</strong> dilates pupils (mydriasis) during fight-or-flight to allow more light in. The parasympathetic system constricts pupils in bright light or at rest."
+  },
+  {
+    q: "What is the relationship between genotype and phenotype?",
+    opts: ["They are always identical", "Genotype is the underlying allele combination; phenotype is the observable characteristic that results from it (influenced by genotype and environment)", "Phenotype determines genotype", "Genotype only describes recessive alleles"],
+    ans: 1,
+    exp: "<strong>Genotype</strong> is your genetic make-up (alleles). <strong>Phenotype</strong> is the observable result — it emerges from the genotype, but can also be influenced by environmental factors."
+  },
+  {
+    q: "Collagen fibres in the skin provide which property?",
+    opts: [
+      "Elasticity — allowing skin to snap back",
+      "Waterproofing via keratin production",
+      "Tensile strength — resisting stretching and tearing",
+      "Melanin pigment production"
+    ],
+    ans: 2,
+    exp: "<strong>Collagen</strong> provides tensile strength to skin, preventing it from tearing under mechanical stress. Elastin fibres (a different protein) provide elasticity/recoil."
+  },
+  {
+    q: "Which cells produce antibodies after activation during an immune response?",
+    opts: [
+      "Helper T cells",
+      "Cytotoxic T cells",
+      "Mast cells",
+      "Plasma cells (differentiated B cells)"
+    ],
+    ans: 3,
+    exp: "B cells, when activated by antigen and Helper T cells, differentiate into <strong>plasma cells</strong> — highly specialised, antibody-secreting cells that produce thousands of antibodies per second."
+  },
+  {
+    q: "If a runner's blood glucose drops during a marathon, which organ immediately releases stored glucose?",
+    opts: [
+      "The liver (via glycogenolysis)",
+      "The pancreas",
+      "The kidneys",
+      "The heart"
+    ],
+    ans: 0,
+    exp: "The <strong>liver</strong> stores glycogen and breaks it down to glucose (glycogenolysis) in response to glucagon — releasing glucose into the blood to maintain blood glucose levels during exercise."
+  },
+  {
+    q: "Which valve prevents backflow of blood from the aorta into the left ventricle during diastole?",
+    opts: [
+      "Bicuspid (mitral) valve",
+      "Aortic semilunar valve",
+      "Pulmonary semilunar valve",
+      "Tricuspid valve"
+    ],
+    ans: 1,
+    exp: "The <strong>aortic semilunar valve</strong> closes during ventricular diastole (relaxation), preventing blood from flowing back from the aorta into the left ventricle."
+  },
+  {
+    q: "Which type of muscle is found in the walls of the digestive tract and is responsible for peristalsis?",
+    opts: ["Cardiac muscle", "Skeletal (voluntary) muscle", "Smooth (involuntary) muscle", "Striated muscle"],
+    ans: 2,
+    exp: "<strong>Smooth muscle</strong> lines the walls of the gut (and other hollow organs). It contracts involuntarily under autonomic control, producing peristaltic waves that move food along."
+  },
+  {
+    q: "What is the primary function of erythrocytes (red blood cells)?",
+    opts: [
+      "Fight infection by producing antibodies",
+      "Clot blood at wound sites",
+      "Remove waste products via phagocytosis",
+      "Transport oxygen from the lungs to body tissues using haemoglobin"
+    ],
+    ans: 3,
+    exp: "<strong>Erythrocytes</strong> are packed with <strong>haemoglobin</strong> — each molecule can bind 4 O₂ molecules. They have no nucleus (maximising haemoglobin content) and a biconcave shape (maximising surface area for O₂ exchange)."
+  },
+  {
+    q: "In the context of the nervous system, what is a 'resting potential'?",
+    opts: [
+      "The electrical charge difference across a neurone membrane at rest (~−70mV, inside negative)",
+      "The potential energy stored in ATP",
+      "The speed of nerve impulse conduction",
+      "The concentration of acetylcholine in the synapse"
+    ],
+    ans: 0,
+    exp: "The <strong>resting potential</strong> (~−70mV) is maintained by the Na⁺/K⁺ pump and selective ion permeability, keeping the inside of the neurone negative relative to outside. This is the 'ready' state before an action potential."
+  },
+  {
+    q: "Which hormone from the posterior pituitary gland is released in response to dehydration?",
+    opts: [
+      "Oxytocin",
+      "ADH (antidiuretic hormone / vasopressin)",
+      "FSH",
+      "Thyroxine"
+    ],
+    ans: 1,
+    exp: "<strong>ADH</strong> is produced in the hypothalamus and released from the posterior pituitary when blood water potential drops (dehydration). It increases water reabsorption in the kidney collecting duct."
+  },
+  {
+    q: "Which blood component is responsible for clotting?",
+    opts: ["Erythrocytes", "Leucocytes (white blood cells)", "Platelets (thrombocytes)", "Plasma proteins only"],
+    ans: 2,
+    exp: "<strong>Platelets</strong> (thrombocytes) are cell fragments that aggregate at wound sites and release clotting factors, initiating the clotting cascade (a positive feedback process) that forms a fibrin clot."
+  }
+];
+
+let answered = 0;
+let correct = 0;
+
+function buildQuiz() {
+  const container = document.getElementById('quiz-container');
+  let currentSection = '';
+  questions.forEach((q, i) => {
+    if (q.section && q.section !== currentSection) {
+      currentSection = q.section;
+      const sec = document.createElement('div');
+      sec.className = 'section-label';
+      sec.textContent = currentSection;
+      container.appendChild(sec);
+    }
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${i}`;
+    const letters = ['A','B','C','D'];
+    const optsHtml = q.opts.map((o, oi) =>
+      `<button class="opt-btn" onclick="answer(${i},${oi})">
+        <span class="letter">${letters[oi]}</span>${o}
+       </button>`).join('');
+    card.innerHTML = `
+      <div class="q-header">
+        <span class="q-num">Q${i+1}</span>
+        <span class="q-text">${q.q}</span>
+      </div>
+      <div class="options" id="opts-${i}">${optsHtml}</div>
+      <div class="explanation" id="exp-${i}">📖 ${q.exp}</div>`;
+    container.appendChild(card);
+  });
+}
+
+function answer(qi, chosen) {
+  const q = questions[qi];
+  const card = document.getElementById(`card-${qi}`);
+  const opts = document.querySelectorAll(`#opts-${qi} .opt-btn`);
+  const exp = document.getElementById(`exp-${qi}`);
+  if (card.classList.contains('answered') || card.classList.contains('correct') || card.classList.contains('incorrect')) return;
+  opts.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct-ans');
+    else if (i === chosen) btn.classList.add('wrong-ans');
+  });
+  exp.classList.add('show');
+  answered++;
+  const isCorrect = chosen === q.ans;
+  if (isCorrect) { correct++; card.classList.add('correct'); }
+  else { card.classList.add('incorrect'); }
+  document.getElementById('score-display').textContent = `${correct} / ${answered}`;
+  const pct = Math.round((correct / answered) * 100);
+  document.getElementById('pct-display').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = Math.round((answered / questions.length) * 100) + '%';
+}
+
+buildQuiz();
+
+</script>
+
+<script>
+// ── GAP FILL DATA ──────────────────────────────────────────────────────────
+const gapFills = [
+  {
+    id: 'gf1',
+    section: 'Synaptic Transmission',
+    q: 'Complete the passage about synaptic transmission by filling in the three blanks.',
+    passage: 'When an action potential reaches the pre-synaptic knob, voltage-gated <span class="gf-blank-wrap" data-i="0"></span> ion channels open. The influx of these ions causes synaptic vesicles to fuse with the pre-synaptic membrane and release <span class="gf-blank-wrap" data-i="1"></span> into the synaptic cleft via exocytosis. The neurotransmitter diffuses across and binds to receptors on the post-synaptic membrane, causing <span class="gf-blank-wrap" data-i="2"></span> of the post-synaptic neurone.',
+    wordbank: ['Calcium (Ca²⁺)', 'Potassium (K⁺)', 'Sodium (Na⁺)', 'acetylcholine', 'adrenaline', 'dopamine', 'depolarisation', 'repolarisation', 'hyperpolarisation'],
+    answers: ['calcium', 'acetylcholine', 'depolarisation'],
+    exp: '<strong>(1) Calcium (Ca²⁺)</strong> — voltage-gated Ca²⁺ channels open on arrival of the action potential; calcium influx triggers vesicle fusion. <strong>(2) Acetylcholine</strong> — the main neurotransmitter at neuromuscular junctions and many synapses. <strong>(3) Depolarisation</strong> — binding of acetylcholine causes Na⁺ channels to open on the post-synaptic membrane, making the inside less negative.'
+  },
+  {
+    id: 'gf2',
+    section: 'Negative Feedback & Homeostasis',
+    q: 'Fill in the blanks to complete the description of negative feedback in body temperature regulation.',
+    passage: 'Body temperature is regulated by the <span class="gf-blank-wrap" data-i="0"></span>, which acts as the control centre. When body temperature rises above the set point, <span class="gf-blank-wrap" data-i="1"></span> of arterioles near the skin surface occurs, increasing heat loss. Sweat glands are also activated to lose heat by <span class="gf-blank-wrap" data-i="2"></span>. These responses bring temperature back to the normal range — an example of negative feedback.',
+    wordbank: ['hypothalamus', 'pituitary gland', 'cerebellum', 'vasodilation', 'vasoconstriction', 'vasoregulation', 'evaporation', 'conduction', 'radiation only'],
+    answers: ['hypothalamus', 'vasodilation', 'evaporation'],
+    exp: '<strong>(1) Hypothalamus</strong> — the brain\'s thermostat, it monitors blood temperature and coordinates responses. <strong>(2) Vasodilation</strong> — widening of skin arterioles brings more blood to the surface, increasing heat loss. <strong>(3) Evaporation</strong> — sweat evaporates from the skin surface, removing latent heat and cooling the body.'
+  },
+  {
+    id: 'gf3',
+    section: 'Kidney & ADH',
+    q: 'Fill in the blanks to describe how the kidneys regulate water balance.',
+    passage: 'When blood water potential falls (e.g. due to dehydration), <span class="gf-blank-wrap" data-i="0"></span> in the hypothalamus detect the change and stimulate the release of <span class="gf-blank-wrap" data-i="1"></span> (ADH) from the posterior pituitary. ADH increases the permeability of the <span class="gf-blank-wrap" data-i="2"></span> to water, so more water is reabsorbed into the blood, producing small volumes of concentrated urine.',
+    wordbank: ['osmoreceptors', 'baroreceptors', 'chemoreceptors', 'antidiuretic hormone', 'aldosterone', 'glucagon', 'collecting duct', 'loop of Henle', 'Bowman\'s capsule'],
+    answers: ['osmoreceptors', 'antidiuretic hormone', 'collecting duct'],
+    exp: '<strong>(1) Osmoreceptors</strong> — specialised cells in the hypothalamus that detect changes in blood solute concentration / water potential. <strong>(2) Antidiuretic hormone (ADH)</strong> — released from the posterior pituitary; its name literally means "against urine production". <strong>(3) Collecting duct</strong> — ADH inserts aquaporin channels into collecting duct cells, increasing water reabsorption by osmosis.'
+  },
+  {
+    id: 'gf4',
+    section: 'Immune Response',
+    q: 'Fill in the blanks to describe the sequence of events in the adaptive immune response.',
+    passage: 'When a phagocyte destroys a pathogen, it becomes an <span class="gf-blank-wrap" data-i="0"></span>, displaying antigen fragments on its surface. This activates <span class="gf-blank-wrap" data-i="1"></span> cells, which release cytokines to stimulate B-lymphocytes. Activated B-lymphocytes differentiate into <span class="gf-blank-wrap" data-i="2"></span>, which secrete large quantities of antibodies specific to the antigen.',
+    wordbank: ['antigen-presenting cell', 'memory cell', 'effector cell', 'helper T', 'cytotoxic T', 'natural killer', 'plasma cells', 'mast cells', 'dendritic cells only'],
+    answers: ['antigen-presenting cell', 'helper t', 'plasma cells'],
+    exp: '<strong>(1) Antigen-presenting cell (APC)</strong> — phagocytes display digested antigen fragments on MHC II proteins after engulfing pathogens. <strong>(2) Helper T cells</strong> — the coordinators of adaptive immunity; they activate both B cells and cytotoxic T cells via cytokine signalling. <strong>(3) Plasma cells</strong> — fully differentiated B cells that are antibody-secreting factories, producing thousands of antibodies per second.'
+  },
+  {
+    id: 'gf5',
+    section: 'Muscle Contraction',
+    q: 'Fill in the blanks to complete the description of skeletal muscle contraction according to the sliding filament theory.',
+    passage: 'A nerve impulse causes calcium ions to be released from the <span class="gf-blank-wrap" data-i="0"></span>. Calcium binds to <span class="gf-blank-wrap" data-i="1"></span> on the actin filament, causing tropomyosin to shift and expose the myosin-binding sites. Myosin heads bind to actin, forming <span class="gf-blank-wrap" data-i="2"></span>. Hydrolysis of ATP causes the myosin heads to pivot, pulling the actin filaments inward and shortening the sarcomere.',
+    wordbank: ['sarcoplasmic reticulum', 'mitochondria', 'nucleus', 'troponin', 'tropomyosin', 'myoglobin', 'cross-bridges', 'action potentials', 'hydrogen bonds'],
+    answers: ['sarcoplasmic reticulum', 'troponin', 'cross-bridges'],
+    exp: '<strong>(1) Sarcoplasmic reticulum</strong> — the specialised endoplasmic reticulum in muscle cells that stores and releases Ca²⁺ on stimulation. <strong>(2) Troponin</strong> — the regulatory protein on actin; when Ca²⁺ binds it, it shifts tropomyosin to reveal binding sites. <strong>(3) Cross-bridges</strong> — the temporary bonds between myosin heads and actin filaments that generate the power stroke of contraction.'
+  },
+  {
+    id: 'gf6',
+    section: 'Cardiac Cycle',
+    q: 'Fill in the blanks to complete the description of the cardiac conduction system.',
+    passage: 'The heartbeat is initiated at the <span class="gf-blank-wrap" data-i="0"></span> node (SA node), located in the right atrium — this is the heart\'s natural pacemaker. The electrical signal spreads across both atria causing them to contract, then reaches the <span class="gf-blank-wrap" data-i="1"></span> node, which briefly delays the signal to allow the atria to empty. The impulse then travels down the Bundle of His and <span class="gf-blank-wrap" data-i="2"></span> fibres, causing the ventricles to contract from the apex upwards.',
+    wordbank: ['sinoatrial', 'atrioventricular', 'semilunar', 'atrioventricular', 'sinoatrial', 'coronary', 'Purkinje', 'collagen', 'Schwann'],
+    answers: ['sinoatrial', 'atrioventricular', 'purkinje'],
+    exp: '<strong>(1) Sinoatrial (SA) node</strong> — the pacemaker, generates spontaneous electrical impulses ~70 times per minute at rest. <strong>(2) Atrioventricular (AV) node</strong> — introduces a ~0.1s delay, ensuring atria finish contracting before ventricles begin. <strong>(3) Purkinje fibres</strong> — rapidly conduct the impulse through the ventricular walls, ensuring coordinated contraction from the bottom up, ejecting blood efficiently into the aorta and pulmonary artery.'
+  },
+  {
+    id: 'gf7',
+    section: 'Genetics',
+    q: 'Fill in the blanks to complete the passage about inheritance.',
+    passage: 'The physical appearance or observable characteristics of an organism are referred to as its <span class="gf-blank-wrap" data-i="0"></span>. This is determined by its <span class="gf-blank-wrap" data-i="1"></span>, which describes the alleles present at a gene locus. When an organism carries two different alleles for a trait, it is described as <span class="gf-blank-wrap" data-i="2"></span>.',
+    wordbank: ['phenotype', 'genotype', 'karyotype', 'genotype', 'phenotype', 'proteome', 'heterozygous', 'homozygous', 'haploid'],
+    answers: ['phenotype', 'genotype', 'heterozygous'],
+    exp: '<strong>(1) Phenotype</strong> — the observable, physical expression of genes (e.g. brown eyes, tall). It can be influenced by the environment as well as genetics. <strong>(2) Genotype</strong> — the actual allele combination at a gene locus (e.g. Bb, TT). <strong>(3) Heterozygous</strong> — carrying two different alleles (e.g. Bb). Homozygous means both alleles are the same (BB or bb).'
+  }
+];
+
+// ── BUILD GAP FILL ────────────────────────────────────────────────────────
+function normalise(s) {
+  return s.toLowerCase().replace(/[^a-z0-9\+]/g, '').trim();
+}
+
+function buildGapFills() {
+  const container = document.getElementById('gf-container');
+  gapFills.forEach((gf, gi) => {
+    const card = document.createElement('div');
+    card.className = 'gf-card';
+    card.id = `gfcard-${gi}`;
+
+    // Word bank display (deduplicated for display)
+    const uniqueWords = [...new Set(gf.wordbank)];
+    const bankHtml = uniqueWords.map(w => `<span>${w}</span>`).join('');
+
+    card.innerHTML = `
+      <div class="gf-header">
+        <span class="gf-num">GF${gi+1}</span>
+        <span class="gf-label">GAP FILL · 3 marks</span>
+        <span class="gf-text" style="margin-left:0.4rem">${gf.section} — ${gf.q}</span>
+      </div>
+      <div class="gf-passage" id="gfpassage-${gi}">${gf.passage}</div>
+      <div class="gf-wordbank"><em>Word bank:</em>${bankHtml}</div>
+      <button class="gf-submit-btn" id="gfbtn-${gi}" onclick="markGapFill(${gi})">Check Answers</button>
+      <div class="gf-result-row" id="gfresult-${gi}"></div>
+      <div class="gf-explanation" id="gfexp-${gi}">📖 ${gf.exp}</div>`;
+
+    container.appendChild(card);
+
+    // Replace <span class="gf-blank-wrap" data-i="X"></span> with actual inputs
+    const passage = card.querySelector(`#gfpassage-${gi}`);
+    const wraps = passage.querySelectorAll('.gf-blank-wrap');
+    wraps.forEach((wrap, wi) => {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'gf-blank';
+      input.placeholder = `(${wi+1})`;
+      input.id = `gfinput-${gi}-${wi}`;
+      input.setAttribute('autocomplete', 'off');
+      wrap.replaceWith(input);
+    });
+  });
+}
+
+function markGapFill(gi) {
+  const gf = gapFills[gi];
+  const card = document.getElementById(`gfcard-${gi}`);
+  const btn = document.getElementById(`gfbtn-${gi}`);
+  const resultRow = document.getElementById(`gfresult-${gi}`);
+  const expDiv = document.getElementById(`gfexp-${gi}`);
+
+  let score = 0;
+  let resultParts = [];
+
+  gf.answers.forEach((ans, i) => {
+    const input = document.getElementById(`gfinput-${gi}-${i}`);
+    if (!input) return;
+    const userVal = normalise(input.value);
+    const correct = normalise(ans);
+    input.disabled = true;
+    if (userVal === correct) {
+      input.classList.add('gf-correct');
+      score++;
+      resultParts.push(`<span class="mark">✓ (${i+1}) Correct</span>`);
+    } else {
+      input.classList.add('gf-wrong');
+      resultParts.push(`<span class="mark-wrong">✗ (${i+1}) Incorrect — answer: ${gf.answers[i]}</span>`);
+    }
+  });
+
+  btn.disabled = true;
+  card.classList.add('gf-done');
+  resultRow.innerHTML = `Score: <span class="mark">${score}/${gf.answers.length}</span> &nbsp;|&nbsp; ` + resultParts.join(' &nbsp;|&nbsp; ');
+  resultRow.classList.add('show');
+  expDiv.classList.add('show');
+}
+
+buildGapFills();
+</script>
+
+</body>
+</html>
